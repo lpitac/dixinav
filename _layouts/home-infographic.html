@@ -8,20 +8,20 @@ custom-foot: js/browse-js.html
 
 {%- assign items = site.data[site.metadata] -%}
 
-<div class="d-flex">
+<div class="row text-center">
 	
-	<div class="col-md-4 align-self-stretch">  
+	<div class="col-md-4">  
 
 	{% include index/objects.html %}
 	
 	</div>
  
-	<div class="col-md-4 align-self-stretch">  
+	<div class="col-md-4">  
 
      {% include index/featured-terms.html field="subject" title="Temas destacados" btn-color="primary" %}
 	</div>
  
-	<div class="col-md-4 align-self-stretch">  
+	<div class="col-md-4">  
 
 	{% include index/time.html %}
 
