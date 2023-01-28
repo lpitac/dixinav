@@ -3,9 +3,40 @@
 {% assign icons = cb_icons.icons %}{%- endif -%}
 {%- assign items = site.data[site.metadata] | where_exp: 'item','item.objectid' -%}
 {%- assign fields = site.data.config-browse -%}
-<script>
 
-/* add items */
+{%- assign index_fields = fields | where: 'index','true' -%}
+<script src="{{ '/assets/lib/lunr.min.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/lunr-store.js' | relative_url }}"></script>
+<script>
+/* initialize lunr */
+var idx = lunr(function () {
+  /* add index fields from config */
+  this.ref('id')
+  {% for f in index_fields %}
+  this.field({{ f.field | jsonify }})
+  {% endfor %}
+
+  //this.pipeline.remove(lunr.trimmer)
+
+  for (var item in store) {
+    this.add({
+      {% for f in index_fields %}
+      {{ f.field | jsonify }}: store[item][{{ f.field | jsonify }}],
+      {% endfor %}
+      id: item
+    })
+  }
+
+});
+
+/* search function */
+function lunr_search () {
+  var resultdiv = document.querySelector('#lunrResults');
+  var query = document.querySelector('#lunrSearchBox').value;//.toLowerCase();
+  /* basic search that supports operators */
+  var result = idx.search(query); 
+ 
+ /* add items */
 var items = [
     {% for i in items %}
     { "title":{{ i.title | strip | jsonify }}, "format":{% if i.format %}{{ i.format | jsonify }}{% else %}""{% endif %}, {% for f in fields %}{% if i[f.field] %}{{ f.field | jsonify }}:{{ i[f.field] | strip | jsonify }},{% endif %}{% endfor %} {% if i.youtubeid %} "youtube": {{ i.youtubeid | jsonify }}, {% endif %}{% if  i.filename contains '/' %}"filename": "{{ i.filename }}" {% else %}"filename":"{{ '/objects/' | relative_url | append: i.filename }}"{% endif %}, "id":{{ i.objectid | jsonify }} }{% unless forloop.last %},{% endunless %}{% endfor %}
@@ -83,28 +114,7 @@ function makeCard(obj) {
     card += '</div></div></div>';
     // send back big string
     return card;
-}
-
-/* filter items function */
-function filterItems(arr,q) {
-    // show loading icon
-    loadingIcon.classList.remove("d-none");
-    // dont filter if no q 
-    if (q=="") { 
-        var filteredItems = arr; 
-    } else {
-        q = q.trim().toUpperCase(); 
-        // js indexOf filter
-        var filteredItems = [];
-        for (var i = 0, len = arr.length; i < len; i++) {
-            var val = "";
-        for (var k in arr[i]) { val += arr[i][k] + " "; }
-            if(val.toUpperCase().indexOf(q) != -1){
-                filteredItems.push(arr[i]);
-            }
-        }
-    }
-    // add number 
+	 // add number 
     document.querySelector("#numberOf").innerHTML = filteredItems.length + " de {{ items | size }} recursos";
     
     // add stuff, make cards first in giant var, then add all at once to speed things up
@@ -113,67 +123,35 @@ function filterItems(arr,q) {
         cards += makeCard(filteredItems[i]);
     }
     browseItemsDiv.innerHTML = cards;
-
-    // finish
-    filterButton.focus();
-    loadingIcon.classList.add("d-none");
-};
-
-/* Fisher-Yates shuffle https://bost.ocks.org/mike/shuffle/ */
-function shuffle(array) {
-    var m = array.length, t, i;
-    while (m) {
-        i = Math.floor(Math.random() * m--);
-        t = array[m];
-        array[m] = array[i];
-        array[i] = t;
-    }
-    return array;
+}
+  var newresults = '<tr><td><h4 class="mt-3">' + result.length + ' resultado(s) atopado(s)</h4></td></tr>';
+  for (var item in result) {
+    var ref = result[item].ref;
+    var searchitem =
+      '<tr>'+
+          '<td class="">' +
+            {% assign display = fields | where: 'display','true' %}
+            {% for d in display %}
+            {% if forloop.first %}
+            '<p class="h4"><a href="{{ site.baseurl }}/item.html?id=' + store[ref].id + '">' + store[ref][{{ fields[0].field | jsonify }}]  + '</a></p>' +
+            '<p class="ms-3">';
+              {% else %}
+              if(store[ref][{{ d.field | jsonify }}]) {
+                searchitem += store[ref][{{ d.field | jsonify }}] + '<br> '; }
+              {% endif %}{% endfor %}
+              searchitem += '</p></td>' +
+      '</tr>';
+    newresults += searchitem;
+  }
+  resultdiv.innerHTML = newresults;
 }
 
-/* init browse page */
-
-/* randomize items once at page load */
-shuffle(items);
-
-/* set some elements */ 
-var loadingIcon = document.querySelector("#loadingIcon");
-var filterTextBox = document.querySelector('#filterTextBox');
-var filterButton = document.querySelector("#filterButton");
-var browseItemsDiv = document.querySelector("#browseItems");
-
-/* filter if hash in initial URL */
-var query = "";
-if(window.location.hash) {
-    query = decodeURIComponent(location.hash.substr(1));
-    filterTextBox.value = query;
-    filterItems(items,query);
-} else {
-    query = "";
-    filterItems(items,query);
+/* init search box and get query string */
+if (window.location.search) {
+  var queryString = decodeURIComponent(window.location.search.substring(1).split("=")[1]);
+  document.querySelector('#lunrSearchBox').value = queryString;
+  lunr_search();
 }
-
-/* filter form */
-function submitFilter() {
-    query = filterTextBox.value;
-    window.location.hash = encodeURIComponent(query);
-}
-/* reset filters */ 
-function resetFilter() {
-    query = "";
-    filterTextBox.value = query;
-    window.location.hash = encodeURIComponent(query);
-}
-
-/* filter if hash changes */ 
-window.addEventListener("hashchange", function() {
-    // read hash
-    query = decodeURIComponent(location.hash.substr(1));
-    filterTextBox.value = query;
-    // filter
-    filterItems(items,query);
-});
-
 /* item array sorting function */
 function sorting(json_object, key_to_sort_by) {
     function sortByKey(a, b) {
