@@ -1,23 +1,28 @@
 {%- assign items = site.data[site.metadata] -%}
 <div class="container-fluid">
-	<div class="row row-cols-4"> 
-		<div class="col">
+	
+	<div class="row row-cols-2">
+	
+		<div class="col-md-auto">
 			<img src="/assets/logotipo.png">
 			<h1 style="color: #0b5ed7;">DixiNav</h1>
 		</div>
 	 
-		<div class="col text-center">  
-		{% include index/objects.html %}
-		</div>
+		<div class="col">
+			<div class="row row-cols-3">
+				<div class="col text-center">  
+					{% include index/objects.html %}
+				</div>
 	 
-		<div class="col text-center">  
-		{% include index/featured-terms.html field="subject" title="Temas destacados" btn-color="primary" %}
-		</div>
+				<div class="col text-center">  
+					{% include index/featured-terms.html field="subject" title="Temas destacados" btn-color="primary" %}
+				</div>
 	 
-		<div class="col text-center">  
-		{% include index/time.html %}
+				<div class="col text-center">  
+					{% include index/time.html %}
+				</div>
+			</div>
 		</div>
-
+		{% include index/divisor.html %}
 	</div>
-	{% include index/divisor.html %}
 </div>
