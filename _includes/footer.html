@@ -2,7 +2,7 @@
 
     <div class="row border-bottom border-white pb-4 mb-2">
 
-        <div class="col-md-7  px-4 mt-2">
+        <div class="col-md-12  px-4 mt-2">
 
             <h4><a href="{{ '/' | relative_url }}" class="text-white font-weight-normal">{{ site.title }}</a></h4>
             <p class="text-white"><small>{{ site.description }}</small></p>
@@ -20,32 +20,17 @@
                     </li>
                     {%- endfor -%}
                 </ul>
+
             </nav>
 
         </div>
 
-        <div class="col-md-5 mt-2 text-end">
-
-           {% if site.organization-logo-nav %} <p class="text-end">
-                <a href="{{ site.organization-link }}" target="_blank" rel="noopener">
-                    <img id="footer-logo" class="img-fluid" src="{{ site.organization-logo-nav | relative_url }}" alt="{{ site.organization-name }} home">
-                </a>
-            </p>
-            {% endif %}
-            <p class="text-white" id="footer-credits">
-                <small><em>built with</em>
-                    <a href="https://collectionbuilder.github.io/" target="_blank" rel="noopener" title="CollectionBuilder">
-                        <img src="{{ '/assets/img/collectionbuilder-logo.png' | relative_url }}" class="img-fluid" alt="CollectionBuilder logo" >
-                    </a>
-                </small>
-            </p>
-
-        </div>
+       
 
     </div>
 
     <div class="col-md-12 text-center pt-3 pb-1">
-        <p class="text-white">Last updated {{ site.time | date: '%Y' }}</p>
+        <p class="text-white">Última actualización: {{ site.time | date: '%d/%m/%Y' }}</p>
     </div>
 
 </footer>
