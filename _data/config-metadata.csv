@@ -1,15 +1,10 @@
 field,display_name,browse_link,external_link
-title,Title,
-creator,Creator,
-date,Date Created,
-description,Description,
-subject,Subjects,true
-location,Location
-latitude,Latitude
-longitude,Longitude
-source,Source
-identifier,Source Identifier,,
-type,Type,
-format,Format,
-rights,Rights,
-rightsstatement,Rights Statement,,true
+title,Título,
+date,Data,
+Signatura,Signatura,
+description,Descrición,
+subject,Temas,true
+Idioma,Idioma
+Comentarios,Comentarios
+Data_dix,Data de dixitalización
+Licenza,Recoñecemento-CompartirIgual 4.0 Internacional (CC BY-SA 4.0),,true
