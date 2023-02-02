@@ -6,4 +6,4 @@ permalink: /search/
 # Lunr.js search will be added below the content in this file
 ---
 
-## Buscar na colección
+## Busca avanzada
